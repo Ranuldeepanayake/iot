@@ -1,2 +1,2 @@
 # iot
- Group project for the IoT- IT5070 module
+ Selected hardware platform ESP32
