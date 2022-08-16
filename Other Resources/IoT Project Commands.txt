@@ -1,0 +1,29 @@
+#MQTT user
+Username: ranul
+Password: iot5120
+
+#Connection string
+FQDN: a417d22d.ap-southeast-1.emqx.cloud
+Port: 15136
+
+#Topics
+temperature
+
+###Mosquitto Broker
+
+#Subscribe to a topic using the client
+mosquitto_sub -v -t "topic/name"
+mosquitto_sub -v -t "esp32/temperature"
+mosquitto_sub -v -t "esp32/humidity"
+
+##ESP32
+
+#Blink command
+https://circuitdigest.com/microcontroller-projects/getting-started-with-esp32-with-arduino-ide
+
+#MQTT publisher/subscriber
+https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
+
+#BMP280
+https://www.circuitschools.com/interfacing-bmp280-with-esp-32-on-i2c-with-errors-and-solutions/
+
