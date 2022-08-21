@@ -9,6 +9,8 @@
 #include <Adafruit_BMP280.h>
 //#include <Adafruit_Sensor.h>
 
+#define LDR_PIN 32
+
 // Replace the next variables with your SSID/Password combination
 const char* ssid = "RANGER HOME DIALOG";
 const char* password = "rangerhomedialog";

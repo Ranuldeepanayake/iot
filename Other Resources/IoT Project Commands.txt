@@ -9,17 +9,36 @@ Port: 15136
 #Topics
 temperature
 
+##Github repository link
+https://github.com/Ranuldeepanayake/iot.git
+
 ###Mosquitto Broker
 
 #Subscribe to a topic using the client
 mosquitto_sub -v -t "topic/name"
-mosquitto_sub -v -t "esp32/temperature"
-mosquitto_sub -v -t "esp32/humidity"
+
+mosquitto_sub -v -t "agrismart/airTemperature"
+mosquitto_sub -v -t "agrismart/ambientLight"
+mosquitto_sub -v -t "agrismart/batteryLevel"
+
+#Publish to a topic using the client
+mosquitto_pub -h localhost -t "topic/name" -m "state"
+
+mosquitto_pub -h localhost -t "agrismart/testLed" -m "on"
+mosquitto_pub -h localhost -t "agrismart/ledStrip" -m "7"
+mosquitto_pub -h localhost -t "agrismart/watePump" -m "7"
+
 
 ##ESP32
 
+#Pinout
+https://randomnerdtutorials.com/esp32-pinout-reference-gpios/
+
 #Blink command
 https://circuitdigest.com/microcontroller-projects/getting-started-with-esp32-with-arduino-ide
+
+#Analog write
+https://deepbluembedded.com/esp32-pwm-tutorial-examples-analogwrite-arduino/
 
 #MQTT publisher/subscriber
 https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
@@ -27,4 +46,7 @@ https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 #BMP280
 https://www.circuitschools.com/interfacing-bmp280-with-esp-32-on-i2c-with-errors-and-solutions/
 
-abc
+
+
+
+
