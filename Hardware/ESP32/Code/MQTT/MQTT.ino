@@ -7,43 +7,39 @@
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <Adafruit_BMP280.h>
-//#include <Adafruit_Sensor.h>
 
-// Replace the next variables with your SSID/Password combination
+#define LED_BUILT_IN 2
+#define LED_RED 26
+#define LED_GREEN 27
+#define LDR_PIN 32
+
+//Objects.
+WiFiClient espClient;
+PubSubClient client(espClient);
+Adafruit_BMP280 bmp; //Uses I2C.
+
+//Wi-Fi credentials.
 const char* ssid = "RANGER HOME DIALOG";
 const char* password = "rangerhomedialog";
 
-// Add your MQTT Broker IP address, example:
+//Add your MQTT Broker IP address, example:
 const char* mqtt_server = "192.168.1.29";
-//const char* mqtt_server = "YOUR_MQTT_BROKER_IP_ADDRESS";
 
-WiFiClient espClient;
-PubSubClient client(espClient);
-long lastMsg = 0;
+long lastMsg= 0;
 char msg[50];
-int value = 0;
+int value= 0;
 
-//uncomment the following lines if you're using SPI
-/*#include <SPI.h>
-#define BME_SCK 18
-#define BME_MISO 19
-#define BME_MOSI 23
-#define BME_CS 5*/
-
-Adafruit_BMP280 bmp; // I2C
-//Adafruit_BME280 bme(BME_CS); // hardware SPI
-//Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
-float temperature = 0;
-float humidity = 0;
-
-// LED Pin
-const int ledPin = 2;
+//Sensor variables
+float airTemperature= 0;
+int soilMoisture= 0;
+int ambientLight= 0;
+int batteryVoltage= 0; 
 
 void setup_wifi() {
   delay(10);
   // We start by connecting to a WiFi network
   Serial.println();
-  Serial.print("Connecting to ");
+  Serial.print("Connecting to SSID: ");
   Serial.println(ssid);
 
   WiFi.begin(ssid, password);
@@ -80,11 +76,11 @@ void callback(char* topic, byte* message, unsigned int length) {
     Serial.print("Changing output to ");
     if(messageTemp == "on"){
       Serial.println("on");
-      digitalWrite(ledPin, HIGH);
+      digitalWrite(LED_BUILT_IN, HIGH);
     }
     else if(messageTemp == "off"){
       Serial.println("off");
-      digitalWrite(ledPin, LOW);
+      digitalWrite(LED_BUILT_IN, LOW);
     }
   }
 }
@@ -98,64 +94,81 @@ void reconnect() {
       Serial.println("connected");
       // Subscribe
       client.subscribe("esp32/output");
+      
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
+      Serial.println(" try again in 2 seconds");
+      
+      // Wait 3 seconds before retrying
+      delay(2000);
     }
   }
 }
 
 void setup() {
+  //Health check LED blink.
+  pinMode(LED_BUILT_IN, OUTPUT);
+  digitalWrite(LED_BUILT_IN, HIGH);
+  
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
+  
   Serial.begin(115200);
-  // default settings
-  // (you can also pass in a Wire library object like &Wire2)
-  //status = bme.begin();  
+
   if (!bmp.begin(0x76)) {
     Serial.println("Could not find a valid BME280 sensor, check wiring!");
     while (1);
   }
+  
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  pinMode(ledPin, OUTPUT);
+  digitalWrite(LED_BUILT_IN, LOW);
 }
 
 void loop() {
+  //Establish a connection with the MQTT broker.
   if (!client.connected()) {
+    digitalWrite(LED_RED, HIGH);
     reconnect();
   }
+  digitalWrite(LED_RED, LOW);
+  
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > 5000) {
+  if (now - lastMsg > 2000) {
     lastMsg = now;
-    
-    // Temperature in Celsius
-    temperature = bmp.readTemperature();   
-    // Uncomment the next line to set temperature in Fahrenheit 
-    // (and comment the previous temperature line)
-    //temperature = 1.8 * bme.readTemperature() + 32; // Temperature in Fahrenheit
-    
-    // Convert the value to a char array
-    char tempString[8];
-    dtostrf(temperature, 1, 2, tempString);
-    Serial.print("Temperature: ");
-    Serial.println(tempString);
-    client.publish("esp32/temperature", tempString);
 
-    humidity = bmp.readPressure();
-    
-    // Convert the value to a char array
-    char humString[20];
-    dtostrf(humidity, 1, 2, humString);
-    Serial.print("Humidity: ");
-    Serial.println(humString);
-    
-    client.publish("esp32/humidity", humString);
+    digitalWrite(LED_GREEN, HIGH);
+    //Read temperature in Celsius
+    airTemperature = bmp.readTemperature();   
+    //Convert the value to a char array
+    char tempString[8];
+    dtostrf(airTemperature, 1, 2, tempString);
+    Serial.print("Temperature: "); Serial.println(tempString);
+    client.publish("agrismart/airTemperature", tempString);
+    digitalWrite(LED_GREEN, LOW);
+
+  //Read the soil moisture as a percentage
+//  humidity = bmp.readPressure();
+//  // Convert the value to a char array
+//  char humString[20];
+//  dtostrf(humidity, 1, 2, humString);
+//  Serial.print("Humidity: ");
+//  Serial.println(humString);
+//  client.publish("agrismart/humidity", humString);
+
+    digitalWrite(LED_GREEN, HIGH);
+    //Read the ambient light as a percentage
+    ambientLight = map(analogRead(LDR_PIN), 0, 4095, 0, 100);
+    //Convert the value to a char array
+    char lightString[8];
+    dtostrf(ambientLight, 1, 2, lightString);
+    Serial.print("Ambient light: "); Serial.println(lightString);
+    client.publish("agrismart/ambientLight", lightString);
+    digitalWrite(LED_GREEN, LOW);
   }
-  
 }
