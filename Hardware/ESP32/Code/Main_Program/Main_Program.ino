@@ -15,6 +15,7 @@
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <Adafruit_BMP280.h>
+#include <BH1750.h>
 
 //Status LEDs
 #define LED_BUILT_IN 2
@@ -22,9 +23,8 @@
 #define LED_GREEN 27
 
 //Sensors
-#define LDR_PIN 32
-//#define MOISTURE_SENSOR_PIN 34
-#define BATTERY_VOLTAGE_PIN 34
+#define SOIL_MOISTURE_SENSOR_PIN 32
+#define BATTERY_VOLTAGE_SENSOR_PIN 34
 
 //LED strip 
 #define LED_STRIP_PIN   5
@@ -35,7 +35,7 @@
 #define LED_STRIP_INPUT_HIGH 7
 
 //Micro-water pump 
-//#define LED_STRIP_PIN   5
+//#define LED_STRIP_PIN   25
 //#define LED_STRIP_PWM_CHANNEL    0
 //#define LED_STRIP_PWM_RESOLUTION   3
 //#define LED_STRIP_PWM_FREQUENCY  5000
@@ -44,6 +44,7 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 Adafruit_BMP280 bmp; //Uses I2C.
+BH1750 lightMeter; //Uses I2C.
 
 //Wi-Fi credentials.
 const char* ssid = "RANGER HOME DIALOG";
@@ -57,10 +58,10 @@ char msg[50];
 int value= 0;
 
 //Sensor variables
-float airTemperature= 0;
-int soilMoisture= 0;
-int ambientLight= 0;
-int batteryVoltage= 0; 
+float ambientLight= 0; //Float is ok
+float soilMoisture= 0;
+float airTemperature= 0; //Float is ok
+float batteryVoltage= 0; 
 
 //Actuator variables
 int ledStripPWM= 0;
@@ -106,7 +107,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   
   //If a message is received on the topic 'agrismart/test', you check if the message is either "on" or "off". 
   //Changes the output state according to the message
-  if (String(topic) == "agrismart/test") {
+  if (String(topic) == "agrismart/testLed") {
     Serial.print("Changing output of the test LED to: ");
     if(messageTemp == "on"){
       Serial.println(messageTemp);
@@ -157,7 +158,7 @@ void reconnect() {
       Serial.println("connected");
       
       //Subscribe to topics.
-      client.subscribe("agrismart/test");
+      client.subscribe("agrismart/testLed");
       client.subscribe("agrismart/ledStrip");
       client.subscribe("agrismart/waterPump");
       
@@ -189,11 +190,17 @@ void setup() {
   //Serial setup.
   Serial.begin(115200);
 
+  // Initialize the I2C bus (BH1750 library doesn't do this automatically)
+  Wire.begin();
+
   //BMP280 setup.
   if (!bmp.begin(0x76)) {
     Serial.println("Could not find a valid BME280 sensor, check wiring!");
     while (1);
   }
+  
+  //BH1750 setup.
+  lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE);
 
   //Wi-Fi and MQTT setup.
   setup_wifi();
@@ -215,47 +222,55 @@ void loop() {
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > 2000) {
+  if (now - lastMsg > 1500) {
     lastMsg = now;
 
-    digitalWrite(LED_GREEN, HIGH);
+    ////
     //Read temperature in Celsius
+    digitalWrite(LED_GREEN, HIGH);
     airTemperature= bmp.readTemperature();   
     //Convert the value to a char array
-    char tempString[8];
+    char tempString[10];
     dtostrf(airTemperature, 1, 2, tempString);
     Serial.print("Temperature: "); Serial.println(tempString);
     client.publish("agrismart/airTemperature", tempString);
     digitalWrite(LED_GREEN, LOW);
+    ////
 
-  //Read the soil moisture as a percentage
-//  humidity = bmp.readPressure();
-//  // Convert the value to a char array
-//  char humString[20];
-//  dtostrf(humidity, 1, 2, humString);
-//  Serial.print("Humidity: ");
-//  Serial.println(humString);
-//  client.publish("agrismart/humidity", humString);
+    ////
+    //Read the soil moisture as a percentage.
+    soilMoisture= map(analogRead(SOIL_MOISTURE_SENSOR_PIN), 0, 4095, 0, 100);
+    // Convert the value to a char array
+    char soilString[10];
+    dtostrf(soilMoisture, 1, 2, soilString);
+    Serial.print("Soil moisture: ");
+    Serial.println(soilString);
+    client.publish("agrismart/soilMoisture", soilString);
+    digitalWrite(LED_GREEN, LOW);
+    ////
 
+    ////
+    //Read the ambient light as a LUX value.
     digitalWrite(LED_GREEN, HIGH);
-    //Read the ambient light as a percentage
-    ambientLight= map(analogRead(LDR_PIN), 0, 4095, 0, 100);
+    ambientLight= lightMeter.readLightLevel();
     //Convert the value to a char array
-    char lightString[8];
+    char lightString[10];
     dtostrf(ambientLight, 1, 2, lightString);
     Serial.print("Ambient light: "); Serial.println(lightString);
     client.publish("agrismart/ambientLight", lightString);
     digitalWrite(LED_GREEN, LOW);
+    ////
 
+    //Read the internal battery voltage as a percentage.
     digitalWrite(LED_GREEN, HIGH);
-    //Read the internal battery voltage as a percentage
-    batteryVoltage= map(analogRead(BATTERY_VOLTAGE_PIN), 0, 4095, 3.0, 4.2);
-    batteryVoltage= map(batteryVoltage, 3.0, 4.2, 0, 100);
+    batteryVoltage= map(analogRead(BATTERY_VOLTAGE_SENSOR_PIN), 0, 4095, 0, 100);
+    //batteryVoltage= map(batteryVoltage, 3, 4, 0, 100);
     //Convert the value to a char array
-    char batteryString[8];
+    char batteryString[20];
     dtostrf(batteryVoltage, 1, 2, batteryString);
     Serial.print("Battery level: "); Serial.println(batteryString);
     client.publish("agrismart/batteryLevel", batteryString);
     digitalWrite(LED_GREEN, LOW);
+    ////
   }
 }

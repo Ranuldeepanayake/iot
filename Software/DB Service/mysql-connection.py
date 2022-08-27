@@ -7,13 +7,32 @@ mydb = mysql.connector.connect(
   database="iot"
 )
 
-mycursor = mydb.cursor()
+def dbTopicAmbientLight(value):
+    print("Connecting to the database")
 
-sql = "INSERT INTO topic_temperature (value) VALUES (%s)"
-val = [45]
-mycursor.execute(sql, val)
+    mycursor = mydb.cursor()
+    sql = "update device set topic_ambient_light= %s where device_id= 1"
+    val = [value]
 
-mydb.commit()
-mycursor.close()
-mydb.close()
-print(mycursor.rowcount, "record inserted.")
+    mycursor= mydb.cursor()
+    mycursor.execute(sql, val)
+    mydb.commit()
+    mycursor.close()
+    mydb.close()
+
+    print(mycursor.rowcount, "Record updated")
+
+def function():
+    mycursor = mydb.cursor()
+
+    sql = "INSERT INTO topic_temperature (value) VALUES (%s)"
+    val = [32.56]
+    mycursor.execute(sql, val)
+
+    mydb.commit()
+    mycursor.close()
+    mydb.close()
+    print(mycursor.rowcount, "record inserted.")
+
+dbTopicAmbientLight(31.78)
+#function()

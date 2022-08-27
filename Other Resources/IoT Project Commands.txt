@@ -17,8 +17,9 @@ https://github.com/Ranuldeepanayake/iot.git
 #Subscribe to a topic using the client
 mosquitto_sub -v -t "topic/name"
 
-mosquitto_sub -v -t "agrismart/airTemperature"
 mosquitto_sub -v -t "agrismart/ambientLight"
+mosquitto_sub -v -t "agrismart/soilMoisture"
+mosquitto_sub -v -t "agrismart/airTemperature"
 mosquitto_sub -v -t "agrismart/batteryLevel"
 
 #Publish to a topic using the client

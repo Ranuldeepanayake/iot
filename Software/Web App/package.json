@@ -1,0 +1,16 @@
+{
+  "name": "iot-project",
+  "version": "1.0.0",
+  "description": "Group project for IoT",
+  "main": "server.js",
+  "author": {
+    "name": "Group",
+    "email": "ranuldeepanayake@outloo.com",
+    "url": "https://whatever.com"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "mysql2": "^2.3.3"
+  },
+  "scripts": {}
+}
