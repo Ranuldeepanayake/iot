@@ -1,0 +1,58 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+</head>
+
+<body>
+
+
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Ambient Light</th>
+        <th scope="col">Soil Moisture</th>
+        <th scope="col">Air temperature</th>
+        <th scope="col">Test LED</th>
+        <th scope="col">Lamp Brightness</th>
+        <th scope="col">Water Pump Speed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= sensorData[0].topic_ambient_light %></td>
+        <td><%= sensorData[0].topic_soil_moisture %></td>
+        <td><%= sensorData[0].topic_air_temperature %></td>
+        <td><%= sensorData[0].topic_test_led %></td>
+        <td><%= sensorData[0].topic_led_strip %></td>
+        <td><%= sensorData[0].topic_water_pump %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form method="POST" action="/test">
+    <label for="testLed">Test LED</label><br>
+    <select name="testLed" id="testLed">
+      <option value="on">On</option>
+      <option value="off" selected>Off</option>
+    </select>
+    <input type="submit" value="Submit">
+  </form>
+
+  <form method="POST" action="/lamp">
+    <label for="lampBrightness">Lamp Brightness</label><br>
+    <input id="lampBrightness" type="text" name="lampBrightness"><br>
+    <input type="submit" value="Submit">
+  </form> 
+
+  <form method="POST" action="/pump">
+    <label for="waterPumpSpeed">Water Pump Speed</label><br>
+    <input id="waterPumpSpeed" type="text" name="waterPumpSpeed"><br>
+    <input type="submit" value="Submit">
+  </form> 
+
+</body>
+
+</html>

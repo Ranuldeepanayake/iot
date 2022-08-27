@@ -35,16 +35,16 @@ messageSoilMoisture= 0.0
 messageAirTemperature= 0.0
 
 #Topics to publish data by reading the database.
-topicTest= "agrismart/testLed"
+topicTestLed= "agrismart/testLed"
 topicLedStrip= "agrismart/ledStrip"
 topicWaterPump= "agrismart/waterPump"
-messageTest= "on"
+messageTestLed= "on"
 messageLedStrip= 0
 messageWaterPump= 0
 
 
 def dbUpdate(messageAmbientLight, messageSoilMoisture, messageAirTemperature):
-    print("Connecting to the database")
+    print("Writing to the database")
     sql= "update device set topic_ambient_light= %s, topic_soil_moisture= %s, topic_air_temperature= %s where device_id= 1"
     val= [messageAmbientLight, messageSoilMoisture, messageAirTemperature]
     
@@ -52,6 +52,26 @@ def dbUpdate(messageAmbientLight, messageSoilMoisture, messageAirTemperature):
     mycursor= mydb.cursor()
     mycursor.execute(sql, val)
     print(mycursor.rowcount, "Record updated")
+
+    mydb.commit()
+    mycursor.close()
+    mydb.close()
+
+def dbRead():
+    print("Reading from the database")
+    sql= "select topic_test_led, topic_led_strip, topic_water_pump from device where device_id= 1"
+    global messageTestLed
+    global messageLedStrip 
+    global messageWaterPump
+    
+    mydb= mysql.connector.connect(**dbConnectionString)
+    mycursor= mydb.cursor()
+    mycursor.execute(sql)
+    result= mycursor.fetchone()
+    print("Data received: ", result)
+    messageTestLed= result[0]
+    messageLedStrip= result[1]
+    messageWaterPump= result[2]
 
     mydb.commit()
     mycursor.close()
@@ -177,9 +197,9 @@ if __name__ == '__main__':
         print("\n")
 
         #Push data to the database.
-        
-        # mycursor= mydb.cursor()
         dbUpdate(messageAmbientLight, messageSoilMoisture, messageAirTemperature)
+
+        # mycursor= mydb.cursor()
         # dbTopicAmbientLight(messageAmbientLight)
         # dbTopicSoilMoisture(messageSoilMoisture)
         # dbTopicAirTemperature(messageAirTemperature)
@@ -187,11 +207,12 @@ if __name__ == '__main__':
         # mydb.close()
         
         #Read the output table from the database continously and publish it to the MQTT server.
-        # print("Publishing actuator data>")
-        # publish(client, topicTest, messageTest)
-        # publish(client, topicLedStrip, messageLedStrip)
-        # publish(client, topicWaterPump, messageWaterPump)
-        # print("\n")
+        print("Publishing actuator data>")
+        dbRead()
+        publish(client, topicTestLed, messageTestLed)
+        publish(client, topicLedStrip, messageLedStrip)
+        publish(client, topicWaterPump, messageWaterPump)
+        #print("\n")
         
         #client.loop_forever()
         time.sleep(1)
