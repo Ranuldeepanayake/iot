@@ -1,58 +1,465 @@
-<!doctype html>
-<html class="no-js" lang="en">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>AGRISMART</title>
+    <meta content="Admin Dashboard" name="description" />
+    <meta content="ThemeDesign" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <!-- Plugins css -->
+    <link href="../assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="../assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="../assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css" rel="stylesheet" />
+
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/icons.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+
 </head>
+
 
 <body>
 
+    <!-- Loader -->
+    <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
 
-  <table>
-    <thead>
-      <tr>
-        <th scope="col">Ambient Light</th>
-        <th scope="col">Soil Moisture</th>
-        <th scope="col">Air temperature</th>
-        <th scope="col">Test LED</th>
-        <th scope="col">Lamp Brightness</th>
-        <th scope="col">Water Pump Speed</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><%= sensorData[0].topic_ambient_light %></td>
-        <td><%= sensorData[0].topic_soil_moisture %></td>
-        <td><%= sensorData[0].topic_air_temperature %></td>
-        <td><%= sensorData[0].topic_test_led %></td>
-        <td><%= sensorData[0].topic_led_strip %></td>
-        <td><%= sensorData[0].topic_water_pump %></td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- Navigation Bar-->
+    <header id="topnav">
+        <div class="topbar-main">
+            <div class="container-fluid">
 
-  <form method="POST" action="/test">
-    <label for="testLed">Test LED</label><br>
-    <select name="testLed" id="testLed">
-      <option value="on">On</option>
-      <option value="off" selected>Off</option>
-    </select>
-    <input type="submit" value="Submit">
-  </form>
+                <!-- Logo container-->
+                <div class="logo">
+                    <!-- Image Logo -->
+                    <a href="index.html" class="logo">
+                        <img src="assets/images/logo.png" alt="" height="50" class="logo-large">
+                    </a>
 
-  <form method="POST" action="/lamp">
-    <label for="lampBrightness">Lamp Brightness</label><br>
-    <input id="lampBrightness" type="text" name="lampBrightness"><br>
-    <input type="submit" value="Submit">
-  </form> 
+                </div>
+                <!-- End Logo container-->
 
-  <form method="POST" action="/pump">
-    <label for="waterPumpSpeed">Water Pump Speed</label><br>
-    <input id="waterPumpSpeed" type="text" name="waterPumpSpeed"><br>
-    <input type="submit" value="Submit">
-  </form> 
 
+                <div class="menu-extras topbar-custom">
+
+
+                    <ul class="list-inline float-right mb-0">
+                        <li class="list-inline-item dropdown notification-list">
+                            <!--<div id="current_date"></div>-->
+                        </li>
+                        <!-- Search -->
+                        <li class="list-inline-item dropdown notification-list d-none d-sm-inline-block">
+                            <form role="search" class="app-search">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control" placeholder="Search..">
+                                    <button type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </form>
+                        </li>
+                        <!-- Messages-->
+                        <!--<li class="list-inline-item dropdown notification-list">
+                            <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="false" aria-expanded="false">
+                                <i class="mdi mdi-email-outline noti-icon"></i>
+                                <span class="badge badge-danger badge-pill noti-icon-badge">5</span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-animated dropdown-menu-lg">-->
+                                <!-- item-->
+                                <!--<div class="dropdown-item noti-title">
+                                    <span class="badge badge-danger float-right">367</span>
+                                    <h5>Messages</h5>
+                                </div>
+
+                                <div class="slimscroll" style="max-height: 230px;">-->
+                                    <!-- item-->
+                                    <!--<a href="javascript:void(0);" class="dropdown-item notify-item">
+                                        <div class="notify-icon"><img src="assets/images/users/user-2.jpg" alt="user-img" class="img-fluid rounded-circle" /> </div>
+                                        <p class="notify-details"><b>Charles M. Jones</b><span class="text-muted">Dummy text of the printing and typesetting industry.</span></p>
+                                    </a>-->
+
+                                    <!-- item-->
+                                    <!--<a href="javascript:void(0);" class="dropdown-item notify-item">
+                                        <div class="notify-icon"><img src="assets/images/users/user-3.jpg" alt="user-img" class="img-fluid rounded-circle" /> </div>
+                                        <p class="notify-details"><b>Thomas J. Mimms</b><span class="text-muted">You have 87 unread messages</span></p>
+                                    </a>
+
+
+                                </div>-->
+
+                                <!-- All-->
+                                <!--<a href="javascript:void(0);" class="dropdown-item notify-all">
+                                    View All
+                                </a>
+
+                            </div>
+                        </li>-->
+                        <!-- notification-->
+                        <li class="list-inline-item dropdown notification-list">
+                            <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="false" aria-expanded="false">
+                                <i class="mdi mdi-bell-outline noti-icon"></i>
+                                <span class="badge badge-danger badge-pill noti-icon-badge">3</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-menu-lg">
+                                <!-- item-->
+                                <div class="dropdown-item noti-title">
+                                    <span class="badge badge-danger float-right">84</span>
+                                    <h5>Notification</h5>
+                                </div>
+
+                                <div class="slimscroll" style="max-height: 230px;">
+
+                                    <!-- item-->
+                                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                        <div class="notify-icon bg-primary"><i class="mdi mdi-cart-outline"></i></div>
+                                        <p class="notify-details">Your order is placed<span class="text-muted">Dummy text of the printing and typesetting industry.</span></p>
+                                    </a>
+
+                                    <!-- item-->
+                                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                        <div class="notify-icon bg-success"><i class="mdi mdi-message"></i></div>
+                                        <p class="notify-details">New Message received<span class="text-muted">You have 87 unread messages</span></p>
+                                    </a>
+
+
+                                </div>
+
+                                <!-- All-->
+                                <a href="javascript:void(0);" class="dropdown-item notify-all">
+                                    View All
+                                </a>
+
+                            </div>
+
+                        </li>
+                        <!-- User-->
+                        <!--<li class="list-inline-item dropdown notification-list">
+                            <a class="nav-link dropdown-toggle arrow-none waves-effect nav-user" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="false" aria-expanded="false">
+                                <img src="assets/images/users/user-1.jpg" alt="user" class="rounded-circle">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated profile-dropdown ">
+                                <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle m-r-5 text-muted"></i> Profile</a>
+                                <a class="dropdown-item" href="#"><span class="badge badge-success mt-1 float-right">5</span><i class="mdi mdi-settings m-r-5 text-muted"></i> Settings</a>
+                                <a class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline m-r-5 text-muted"></i> Lock screen</a>
+                                <a class="dropdown-item" href="#"><i class="mdi mdi-logout m-r-5 text-muted"></i> Logout</a>
+                            </div>
+
+                        </li>-->
+                        <li class="menu-item list-inline-item">
+                            <!-- Mobile menu toggle-->
+                            <a class="navbar-toggle nav-link">
+                                <div class="lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+                            <!-- End mobile menu toggle-->
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- end menu-extras -->
+
+                <div class="clearfix"></div>
+
+            </div> <!-- end container -->
+        </div>
+        <!-- end topbar-main -->
+
+    </header>
+    <!-- End Navigation Bar-->
+
+
+    <div class="wrapper">
+        <!-- Page-Title -->
+        <div class="row bg-white mb-4">
+            <div class="col-sm-12">
+                <div class="container-fluid">
+                    <div class="page-title-box">
+                        <div class="btn-group float-right">
+                            <!--<div id="current_date"></div>-->
+                            <span id="time"> </span>
+                        </div>
+                        <h4 class="page-title">DASHBOARD</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end page title end breadcrumb -->
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 col-md-6">
+                    <div class="card bg-primary m-b-30 text-white weather-box">
+                        <div class="card-body row">
+                            <div class="col-md-5 text-center">
+                                <div>
+                                    <img src="assets/images/Soil.png" class="card-icon" />
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div>
+                                    <h4>Soil Moisture Level</h4>
+                                    <h1 class="card-text"><%= sensorData[0].topic_soil_moisture %></h1>
+                                    <h6>High</h6>
+
+                                </div>
+                            </div>
+                            <div class="weather-icon">
+                                <i class="mdi mdi-weather-pouring"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6">
+                    <div class="card bg-primary1 m-b-30 text-white weather-box">
+                        <div class="card-body row">
+                            <div class="col-md-5 text-center">
+                                <div>
+                                    <img src="assets/images/Light.png" class="card-icon" />
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div>
+                                    <h4>Light LUX Level</h4>
+                                    <h1 class="card-text"><%= sensorData[0].topic_ambient_light %></h1>
+                                    <h6>Normal</h6>
+
+                                </div>
+                            </div>
+                            <div class="weather-icon">
+                                <i class="mdi mdi-weather-partlycloudy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6">
+                    <div class="card bg-primary2 m-b-30 text-white weather-box">
+                        <div class="card-body row">
+                            <div class="col-md-5 text-center">
+                                <div>
+                                    <img src="assets/images/Temp.png" class="card-icon" />
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div>
+                                    <h4>Air Temperature</h4>
+                                    <h1 class="card-text"><%= sensorData[0].topic_air_temperature %></h1>
+                                    <h6>Normal</h6>
+
+                                </div>
+                            </div>
+                            <div class="weather-icon">
+                                <i class="mdi mdi-thermometer-lines"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--  <div class="col-xl-4 col-md-6">
+                    <div class="card mini-stat m-b-30">
+                        <div class="p-3 bg-primary text-white">
+                            <div class="mini-stat-icon">
+                                <i class="mdi mdi-tag-text-outline float-right mb-0"></i>
+                            </div>
+                            <h6 class="text-uppercase mb-0">Average Price</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="border-bottom pb-4">
+                                <span class="badge badge-danger"> -02% </span> <span class="ml-2 text-muted">From previous period</span>
+                            </div>
+                            <div class="mt-4 text-muted">
+                                <div class="float-right">
+                                    <p class="m-0">Last : 15.8</p>
+                                </div>
+                                <h5 class="m-0">14.5<i class="mdi mdi-arrow-down text-danger ml-2"></i></h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+            </div>
+            <!-- end row -->
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="card m-b-30">
+                        <div class="card-body">
+                            <h4 class="mt-0 header-title">History Records</h4>
+                            <p class="text-muted m-b-10 font-14 d-inline-block text-truncate w-100">
+                                Showing the detail records of last 24 hours.
+                            </p>
+                            <div class="table-responsive custom-height">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Time (H)</th>
+                                            <th>Soil Moisture Level</th>
+                                            <th>Light LUX Level</th>
+                                            <th>Air Temperature</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">00.00</th>
+                                            <td>80%</td>
+                                            <td>4000</td>
+                                            <td>25°C</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">01.00</th>
+                                            <td>60%</td>
+                                            <td>3000</td>
+                                            <td>22°C</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">02.00</th>
+                                            <td>75%</td>
+                                            <td>5000</td>
+                                            <td>27°C</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">03.00</th>
+                                            <td>80%</td>
+                                            <td>4500</td>
+                                            <td>26°C</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">04.00</th>
+                                            <td>70%</td>
+                                            <td>5500</td>
+                                            <td>27°C</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">05.00</th>
+                                            <td>80%</td>
+                                            <td>4000</td>
+                                            <td>25°C</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--<div id="flotRealTime" style="height: 320px" class="flot-chart"></div>-->
+                            <!--        <div id="morris-area-example" style="height: 350px"></div>-->
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="card m-b-30">
+                        <div class="card-body">
+                            <h4 class="mt-0 header-title">Actuators Action</h4>
+                            <p class="text-muted m-b-10 font-14 d-inline-block text-truncate w-100">
+                                Helping you to make the right decision.
+                            </p>
+                            <form method="POST" action="/test">
+                                <div class="form-group">
+                                    <label for="testLed">Test LED</label><br>
+                                    <select name="testLed" id="testLed">
+                                        <option value="on">On</option>
+                                        <option value="off">Off</option>
+                                    </select>
+                                    <input type="submit" value="Submit">
+                                </div>
+                                </form>
+                                <form method="POST" action="/lamp">
+                                <div class="form-group">
+                                    <label class="text-muted">Adjust Lamp's Brightness (Units)</label>
+                                    <input id="lampBrightness" type="text" value="0" name="lampBrightness" data-bts-min="0" data-bts-max="7"
+                                        data-bts-init-val="" data-bts-step="1" data-bts-decimal="0" data-bts-step-interval="100"
+                                        data-bts-force-step-divisibility="round" data-bts-step-interval-delay="500" data-bts-prefix=""
+                                        data-bts-postfix="" data-bts-prefix-extra-class="" data-bts-postfix-extra-class="" data-bts-booster="true"
+                                        data-bts-boostat="10" data-bts-max-boosted-step="false" data-bts-mousewheel="true"
+                                        data-bts-button-down-class="btn btn-default" data-bts-button-up-class="btn btn-default" />
+                                    <button type="submit" class="btn btn-outline-primary m-t-10 w-100 waves-effect waves-light"
+                                        value="Submit">Proceed</button>
+                                </div>
+                            </form>
+                            <form method="POST" action="/pump">
+                                <div class="form-group">
+                                    <label class="text-muted">Adjust Water Pumps Flow (Units)</label>
+                                    <input id="waterPumpSpeed" type="text" value="0" name="waterPumpSpeed" data-bts-min="0" data-bts-max="7" data-bts-init-val="" data-bts-step="1" data-bts-decimal="0" data-bts-step-interval="100" data-bts-force-step-divisibility="round" data-bts-step-interval-delay="500" data-bts-prefix="" data-bts-postfix="" data-bts-prefix-extra-class="" data-bts-postfix-extra-class="" data-bts-booster="true" data-bts-boostat="10" data-bts-max-boosted-step="false" data-bts-mousewheel="true" data-bts-button-down-class="btn btn-default" data-bts-button-up-class="btn btn-default" />
+                                    <button type="submit" class="btn btn-outline-primary m-t-10 w-100 waves-effect waves-light" value="Submit">Proceed</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- end row -->
+
+
+        </div> <!-- end container -->
+    </div>
+    <!-- end wrapper -->
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    Copyright © 2022 <b>Achievers</b>. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer -->
+    <!-- jQuery  -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/modernizr.min.js"></script>
+    <script src="assets/js/detect.js"></script>
+    <script src="assets/js/fastclick.js"></script>
+    <script src="assets/js/jquery.slimscroll.js"></script>
+    <script src="assets/js/jquery.blockUI.js"></script>
+    <script src="assets/js/waves.js"></script>
+
+   
+    <!-- Alertify js -->
+    <script src="assets/plugins/alertify/js/alertify.js"></script>
+    <script src="assets/pages/alertify-init.js"></script>
+
+    <!-- Plugins js -->
+    <script src="assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+    <script src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script src="assets/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js"></script>
+
+    <!-- Plugins Init js -->
+    <script src="assets/pages/form-advanced.js"></script>
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+    <!--<script>
+        date = new Date();
+        year = date.getFullYear();
+        month = date.getMonth() + 1;
+        day = date.getDate();
+        document.getElementById("current_date").innerHTML = day + "/" + month + "/" + year;
+    </script>-->
+    <script>
+        //document.getElementById("current_date").innerHTML = Date();
+        //`use strict`
+        //var datetime = new Date();
+        //console.log(datetime);
+        //document.getElementById("time").textContent = datetime; //it will print on html page
+
+        `use strict`;
+        function refreshTime() {
+            const timeDisplay = document.getElementById("time");
+            const dateString = new Date().toLocaleString();
+            const formattedString = dateString.replace(", ", " - ");
+            timeDisplay.textContent = formattedString;
+        }
+        setInterval(refreshTime, 1000);
+
+    </script>
 </body>
-
 </html>
