@@ -362,8 +362,14 @@
                                 <div class="form-group">
                                     <label for="testLed">Test LED</label><br>
                                     <select name="testLed" id="testLed">
+
                                         <option value="on">On</option>
-                                        <option value="off">Off</option>
+                                        <% if(sensorData[0].topic_test_led== 'off'){ %>
+                                            <option value="off" selected>Off</option>
+                                        <% } else if(sensorData[0].topic_test_led== 'on'){ %>
+                                            <option value="off">Off</option>
+                                        <%  }   %>
+
                                     </select>
                                     <input type="submit" value="Submit">
                                 </div>
@@ -371,7 +377,7 @@
                                 <form method="POST" action="/lamp">
                                 <div class="form-group">
                                     <label class="text-muted">Adjust Lamp's Brightness (Units)</label>
-                                    <input id="lampBrightness" type="text" value="0" name="lampBrightness" data-bts-min="0" data-bts-max="7"
+                                    <input id="lampBrightness" type="text" value=<%= sensorData[0].topic_led_strip %> name="lampBrightness" data-bts-min="0" data-bts-max="7"
                                         data-bts-init-val="" data-bts-step="1" data-bts-decimal="0" data-bts-step-interval="100"
                                         data-bts-force-step-divisibility="round" data-bts-step-interval-delay="500" data-bts-prefix=""
                                         data-bts-postfix="" data-bts-prefix-extra-class="" data-bts-postfix-extra-class="" data-bts-booster="true"
@@ -384,7 +390,7 @@
                             <form method="POST" action="/pump">
                                 <div class="form-group">
                                     <label class="text-muted">Adjust Water Pumps Flow (Units)</label>
-                                    <input id="waterPumpSpeed" type="text" value="0" name="waterPumpSpeed" data-bts-min="0" data-bts-max="7" data-bts-init-val="" data-bts-step="1" data-bts-decimal="0" data-bts-step-interval="100" data-bts-force-step-divisibility="round" data-bts-step-interval-delay="500" data-bts-prefix="" data-bts-postfix="" data-bts-prefix-extra-class="" data-bts-postfix-extra-class="" data-bts-booster="true" data-bts-boostat="10" data-bts-max-boosted-step="false" data-bts-mousewheel="true" data-bts-button-down-class="btn btn-default" data-bts-button-up-class="btn btn-default" />
+                                    <input id="waterPumpSpeed" type="text" value=<%= sensorData[0].topic_water_pump %> name="waterPumpSpeed" data-bts-min="0" data-bts-max="7" data-bts-init-val="" data-bts-step="1" data-bts-decimal="0" data-bts-step-interval="100" data-bts-force-step-divisibility="round" data-bts-step-interval-delay="500" data-bts-prefix="" data-bts-postfix="" data-bts-prefix-extra-class="" data-bts-postfix-extra-class="" data-bts-booster="true" data-bts-boostat="10" data-bts-max-boosted-step="false" data-bts-mousewheel="true" data-bts-button-down-class="btn btn-default" data-bts-button-up-class="btn btn-default" />
                                     <button type="submit" class="btn btn-outline-primary m-t-10 w-100 waves-effect waves-light" value="Submit">Proceed</button>
                                 </div>
                             </form>

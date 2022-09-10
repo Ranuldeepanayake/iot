@@ -3,7 +3,7 @@
  * M.Sc IoT project.
  * Uses the MQTT protocol to send and receive data through Wi-Fi. 
  * 
- * Sensor: BMP280, LDR and soil mositure sensor.
+ * Sensors: BMP280, BH1750 and soil mositure sensor.
  * Actuators: LED strip and micro-water pump.
  * 
  * Authors: Ranul Deepanayake, Rui Santos (https://randomnerdtutorials.com)
@@ -27,18 +27,20 @@
 #define BATTERY_VOLTAGE_SENSOR_PIN 34
 
 //LED strip 
-#define LED_STRIP_PIN   5
+#define LED_STRIP_PIN   33
 #define LED_STRIP_PWM_CHANNEL    0
 #define LED_STRIP_PWM_RESOLUTION   3
 #define LED_STRIP_PWM_FREQUENCY  5000
 #define LED_STRIP_INPUT_LOW 0
 #define LED_STRIP_INPUT_HIGH 7
 
-//Micro-water pump 
-//#define LED_STRIP_PIN   25
-//#define LED_STRIP_PWM_CHANNEL    0
-//#define LED_STRIP_PWM_RESOLUTION   3
-//#define LED_STRIP_PWM_FREQUENCY  5000
+//Water pump 
+#define WATER_PUMP_PIN   25
+#define WATER_PUMP_PWM_CHANNEL    2
+#define WATER_PUMP_PWM_RESOLUTION   3
+#define WATER_PUMP_PWM_FREQUENCY  5000
+#define WATER_PUMP_INPUT_LOW 0
+#define WATER_PUMP_INPUT_HIGH 7
 
 //Objects.
 WiFiClient espClient;
@@ -124,7 +126,7 @@ void callback(char* topic, byte* message, unsigned int length) {
     uint16_t value= uint16_t(messageTemp.toInt());
     
     if(value< LED_STRIP_INPUT_LOW || value> LED_STRIP_INPUT_HIGH){
-      Serial.print("Invalid message!: ");
+      Serial.print("Invalid LED control message!: ");
       Serial.println(value);
   }else{
       Serial.print("Changing output of the LED strip to: ");
@@ -133,17 +135,19 @@ void callback(char* topic, byte* message, unsigned int length) {
     }
   }
 
-//  //Water pump control.
-//  if(String(topic) == "agrismart/waterPump") {
-//    if(messageTemp.toInt()< LED_STRIP_INPUT_LOW || messageTemp.toInt()> LED_STRIP_INPUT_HIGH){
-//      Serial.print("Invalid message!: ");
-//      Serial.println(messageTemp.toInt());
-//  }else{
-//      Serial.print("Changing output of the LED strip to: ");
-//      Serial.println(messageTemp.toInt());
-//      ledcWrite(PWM1_Ch, messageTemp.toInt());
-//    }
-//  }
+  //Water pump control.
+  if(String(topic) == "agrismart/waterPump") {
+    uint16_t value= uint16_t(messageTemp.toInt());
+    
+    if(value< WATER_PUMP_INPUT_LOW || value> WATER_PUMP_INPUT_HIGH){
+      Serial.print("Invalid water pump control message!: ");
+      Serial.println(value);
+  }else{
+      Serial.print("Changing output of the water pump to: ");
+      Serial.println(value);
+      ledcWrite(WATER_PUMP_PWM_CHANNEL, value);
+    }
+  }
 }
 
 //Reconnects with the MQTT server.
@@ -178,14 +182,21 @@ void setup() {
   //Health check LED blink.
   pinMode(LED_BUILT_IN, OUTPUT);
   digitalWrite(LED_BUILT_IN, HIGH);
-  
+
+  //Status LED setup.
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
   //DAC setup.
+  //For the LED strip.
   ledcAttachPin(LED_STRIP_PIN, LED_STRIP_PWM_CHANNEL);
   ledcSetup(LED_STRIP_PWM_CHANNEL, LED_STRIP_PWM_FREQUENCY, LED_STRIP_PWM_RESOLUTION);
   ledcWrite(LED_STRIP_PWM_CHANNEL, 0);
+
+  //For the water pump.
+  ledcAttachPin(WATER_PUMP_PIN, WATER_PUMP_PWM_CHANNEL);
+  ledcSetup(WATER_PUMP_PWM_CHANNEL, WATER_PUMP_PWM_FREQUENCY, WATER_PUMP_PWM_RESOLUTION);
+  ledcWrite(WATER_PUMP_PWM_CHANNEL, 0);
 
   //Serial setup.
   Serial.begin(115200);
@@ -239,7 +250,7 @@ void loop() {
 
     ////
     //Read the soil moisture as a percentage.
-    soilMoisture= map(analogRead(SOIL_MOISTURE_SENSOR_PIN), 0, 4095, 0, 100);
+    soilMoisture= 100- (map(analogRead(SOIL_MOISTURE_SENSOR_PIN), 0, 4095, 0, 100));
     // Convert the value to a char array
     char soilString[10];
     dtostrf(soilMoisture, 1, 2, soilString);
