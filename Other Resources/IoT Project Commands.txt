@@ -1,13 +1,8 @@
-#MQTT user
+#Broker VM
+Name: kubernetes-worker
+IP  : 192.168.1.29
 Username: ranul
-Password: iot5120
-
-#Connection string
-FQDN: a417d22d.ap-southeast-1.emqx.cloud
-Port: 15136
-
-#Topics
-temperature
+Password: ranul@123 
 
 ##Github repository link
 https://github.com/Ranuldeepanayake/iot.git
@@ -17,17 +12,26 @@ https://github.com/Ranuldeepanayake/iot.git
 #Subscribe to a topic using the client
 mosquitto_sub -v -t "topic/name"
 
-mosquitto_sub -v -t "agrismart/ambientLight"
-mosquitto_sub -v -t "agrismart/soilMoisture"
-mosquitto_sub -v -t "agrismart/airTemperature"
-mosquitto_sub -v -t "agrismart/batteryLevel"
+mosquitto_sub -v -t "agrismart/ambientLight" &
+mosquitto_sub -v -t "agrismart/soilMoisture" &
+mosquitto_sub -v -t "agrismart/airTemperature" &
+mosquitto_sub -v -t "agrismart/batteryLevel" &
 
 #Publish to a topic using the client
 mosquitto_pub -h localhost -t "topic/name" -m "state"
 
-mosquitto_pub -h localhost -t "agrismart/testLed" -m "on"
-mosquitto_pub -h localhost -t "agrismart/ledStrip" -m "7"
-mosquitto_pub -h localhost -t "agrismart/watePump" -m "7"
+mosquitto_pub -h localhost -t "agrismart/testLed" -m "on" &
+mosquitto_pub -h localhost -t "agrismart/ledStrip" -m "2" &
+mosquitto_pub -h localhost -t "agrismart/watePump" -m "0" &
+
+
+#Execution steps
+
+1. Power up the device.
+2. Power up the kubernetes-worker virtual machine.
+3. Run the Python program mainProgram.py on the host computer.
+4. Execute the subscriber and publisher scripts on the virtual machine.
+5. Execute the node.js program server.js.
 
 
 ##ESP32
@@ -47,7 +51,20 @@ https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 #BMP280
 https://www.circuitschools.com/interfacing-bmp280-with-esp-32-on-i2c-with-errors-and-solutions/
 
+#Soil moisture sensor
+https://lastminuteengineers.com/soil-moisture-sensor-arduino-tutorial/
 
+
+#MQTT user
+Username: ranul
+Password: iot5120
+
+#Connection string
+FQDN: a417d22d.ap-southeast-1.emqx.cloud
+Port: 15136
+
+#Topics
+temperature
 
 
 
